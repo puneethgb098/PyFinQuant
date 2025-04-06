@@ -1,10 +1,11 @@
-import numpy as np
-from scipy.stats import norm
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from pyfinquant.instruments.option import Option, OptionType
+import numpy as np
+from scipy.stats import norm
 
+# Use TYPE_CHECKING to avoid circular imports for type hints
+if TYPE_CHECKING:
+    from pyfinquant.instruments.option import Option
 
 class BlackScholes:
     """
@@ -13,7 +14,7 @@ class BlackScholes:
     """
 
     @staticmethod
-    def _calculate_d1_d2(option: "Option") -> tuple[float, float]:
+    def _calculate_d1_d2(option: 'Option') -> tuple[float, float]:
         """
         Calculates the d1 and d2 parameters used in the Black-Scholes formula.
 
@@ -30,19 +31,28 @@ class BlackScholes:
         sigma = option.volatility
         T = option.time_to_maturity
 
+        # Handle potential division by zero or log of non-positive if T or sigma is zero,
+        # though Option validation should prevent T <= 0 and sigma <= 0.
+        # However, sigma * sqrt(T) could still be very small or zero.
         sigma_sqrt_T = sigma * np.sqrt(T)
         if sigma_sqrt_T == 0:
-            if S * np.exp(-q * T) >= K * np.exp(-r * T):
-                return np.inf, np.inf
-            else:
-                return -np.inf, -np.inf
+             # If time or volatility is zero, the option price is its intrinsic value.
+             # We can return values for d1/d2 that lead to this, or handle it in the price func.
+             # For simplicity, let's return large values that push N(d) to 0 or 1.
+             # A more robust approach might handle T=0 or sigma=0 directly in price().
+             # If S > K for call, d1->inf, d2->inf. If S < K for put, d1->-inf, d2->-inf.
+             # Arbitrarily large/small number:
+             if S * np.exp(-q * T) >= K * np.exp(-r * T): # Equivalent to intrinsic value > 0
+                 return np.inf, np.inf
+             else:
+                 return -np.inf, -np.inf
 
         d1 = (np.log(S / K) + (r - q + 0.5 * sigma**2) * T) / sigma_sqrt_T
         d2 = d1 - sigma_sqrt_T
         return d1, d2
 
     @classmethod
-    def price(cls, option: "Option") -> float:
+    def price(cls, option: 'Option') -> float:
         """
         Calculates the Black-Scholes-Merton price for a European option.
 
@@ -58,19 +68,39 @@ class BlackScholes:
         q = option.dividend_yield
         T = option.time_to_maturity
 
+        # Handle edge case T=0: Option price is intrinsic value
         if T == 0:
             if option.is_call():
                 return max(0.0, S - K)
-            else:  # Put
+            else: # Put
                 return max(0.0, K - S)
 
         d1, d2 = cls._calculate_d1_d2(option)
 
+        # If d1 or d2 became inf due to sigma_sqrt_T = 0 (handled in _calculate_d1_d2)
+        # Check this case again, although T=0 is handled above. sigma=0 is trickier.
+        # If sigma=0, the future price is deterministic: S * exp((r-q)*T)
+        # if option.volatility == 0: # A more direct check
+        #     forward_price = S * np.exp((r-q)*T)
+        #     discount = np.exp(-r*T)
+        #     if option.is_call():
+        #         return discount * max(0.0, forward_price - K)
+        #     else: # Put
+        #         return discount * max(0.0, K - forward_price)
+        # The d1/d2 inf handling should approximate this.
+
+
         if option.is_call():
-            price = (S * np.exp(-q * T) * norm.cdf(d1)) - (K * np.exp(-r * T) * norm.cdf(d2))
+            # Price = S * exp(-q*T) * N(d1) - K * exp(-r*T) * N(d2)
+            price = (S * np.exp(-q * T) * norm.cdf(d1)) - \
+                    (K * np.exp(-r * T) * norm.cdf(d2))
         elif option.is_put():
-            price = (K * np.exp(-r * T) * norm.cdf(-d2)) - (S * np.exp(-q * T) * norm.cdf(-d1))
+            # Price = K * exp(-r*T) * N(-d2) - S * exp(-q*T) * N(-d1)
+            price = (K * np.exp(-r * T) * norm.cdf(-d2)) - \
+                    (S * np.exp(-q * T) * norm.cdf(-d1))
         else:
+            # Should be unreachable due to OptionType enum
             raise ValueError("Invalid option type specified.")
 
+        # Price cannot be negative (arbitrage)
         return max(0.0, price)

@@ -1,17 +1,13 @@
 import enum
-from dataclasses import dataclass, field
-from datetime import date
-from typing import Optional
+from dataclasses import dataclass
 
 
 class OptionType(enum.Enum):
     """Enumeration for Call or Put option type."""
-
     CALL = "Call"
     PUT = "Put"
 
-
-@dataclass(frozen=True)
+@dataclass(frozen=True) # Use frozen=True for immutability, good for financial objects
 class Option:
     """
     Represents a European financial option contract.
@@ -25,14 +21,13 @@ class Option:
         option_type (OptionType): Type of the option (CALL or PUT).
         dividend_yield (float): Annualized continuous dividend yield of the underlying asset (q), decimal form. Defaults to 0.0.
     """
-
     underlying_price: float
     strike_price: float
     risk_free_rate: float
     volatility: float
     time_to_maturity: float
     option_type: OptionType
-    dividend_yield: float = 0.0
+    dividend_yield: float = 0.0 # Default dividend yield to 0
 
     def __post_init__(self):
         """Perform validation checks after initialization."""
@@ -44,8 +39,9 @@ class Option:
             raise ValueError("Volatility must be positive.")
         if self.time_to_maturity <= 0:
             raise ValueError("Time to maturity must be positive.")
+        # risk_free_rate can theoretically be negative, so no strict check > 0
         if self.dividend_yield < 0:
-            raise ValueError("Dividend yield cannot be negative.")
+             raise ValueError("Dividend yield cannot be negative.")
 
     def is_call(self) -> bool:
         """Check if the option is a Call."""
@@ -54,3 +50,14 @@ class Option:
     def is_put(self) -> bool:
         """Check if the option is a Put."""
         return self.option_type == OptionType.PUT
+
+# Example of a helper function that could be in utils, but fits here too:
+# This requires date calculations, which might add dependencies or complexity.
+# For simplicity now, we assume time_to_maturity is directly provided in years.
+# def calculate_time_to_maturity(evaluation_date: date, expiration_date: date) -> float:
+#     """Calculates time to maturity in years between two dates."""
+#     if evaluation_date >= expiration_date:
+#         return 0.0 # Or raise error
+#     delta = expiration_date - evaluation_date
+#     # Approximate using average days in year
+#     return delta.days / 365.25
