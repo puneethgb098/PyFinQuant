@@ -1,22 +1,42 @@
 Metadata-Version: 2.4
 Name: pyfinquant
 Version: 0.1.0
-Summary: A Python package for financial modeling, option pricing, and quantitative analysis.
-Author-email: Puneeth G B <your-email@example.com>
-License: MIT
-Requires-Python: >=3.9
+Summary: A Python library for financial quantitative analysis, focusing on options pricing and greeks.
+Author-email: Your Name <your.email@example.com>
+Project-URL: Homepage, https://github.com/your-username/PyFinQuant
+Project-URL: Repository, https://github.com/your-username/PyFinQuant
+Keywords: finance,quantitative,options,black-scholes,greeks,derivatives
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Office/Business :: Financial :: Investment
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: numpy
-Requires-Dist: scipy
-Requires-Dist: pandas
-Requires-Dist: plotly
+Requires-Dist: numpy>=1.21
+Requires-Dist: scipy>=1.7
 Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
 Requires-Dist: ruff; extra == "dev"
 Requires-Dist: mypy; extra == "dev"
-Requires-Dist: pytest; extra == "dev"
-Requires-Dist: pytest-cov; extra == "dev"
-Requires-Dist: black; extra == "dev"
-Requires-Dist: isort; extra == "dev"
 Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: Sphinx; extra == "dev"
+Requires-Dist: sphinx-rtd-theme; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest>=7.0; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Provides-Extra: doc
+Requires-Dist: Sphinx; extra == "doc"
+Requires-Dist: sphinx-rtd-theme; extra == "doc"
 Dynamic: license-file
