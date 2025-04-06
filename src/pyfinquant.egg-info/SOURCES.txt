@@ -5,6 +5,7 @@ src/pyfinquant/__init__.py
 src/pyfinquant.egg-info/PKG-INFO
 src/pyfinquant.egg-info/SOURCES.txt
 src/pyfinquant.egg-info/dependency_links.txt
+src/pyfinquant.egg-info/requires.txt
 src/pyfinquant.egg-info/top_level.txt
 src/pyfinquant/greeks/__init__.py
 src/pyfinquant/greeks/analytical.py

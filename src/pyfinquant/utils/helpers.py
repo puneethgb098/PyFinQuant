@@ -10,6 +10,7 @@ from typing import Union
 
 Numeric = Union[int, float]
 
+
 def check_positive(value: Numeric, name: str = "Value") -> None:
     """
     Raises a ValueError if the provided numeric value is not strictly positive (> 0).
@@ -23,6 +24,7 @@ def check_positive(value: Numeric, name: str = "Value") -> None:
     """
     if value <= 0:
         raise ValueError(f"{name} must be positive, but got {value}")
+
 
 def check_non_negative(value: Numeric, name: str = "Value") -> None:
     """

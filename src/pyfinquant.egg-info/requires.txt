@@ -1,0 +1,13 @@
+numpy
+scipy
+pandas
+plotly
+
+[dev]
+ruff
+mypy
+pytest
+pytest-cov
+black
+isort
+build

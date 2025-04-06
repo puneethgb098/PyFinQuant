@@ -3,12 +3,15 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Optional
 
+
 class OptionType(enum.Enum):
     """Enumeration for Call or Put option type."""
+
     CALL = "Call"
     PUT = "Put"
 
-@dataclass(frozen=True) 
+
+@dataclass(frozen=True)
 class Option:
     """
     Represents a European financial option contract.
@@ -22,13 +25,14 @@ class Option:
         option_type (OptionType): Type of the option (CALL or PUT).
         dividend_yield (float): Annualized continuous dividend yield of the underlying asset (q), decimal form. Defaults to 0.0.
     """
+
     underlying_price: float
     strike_price: float
     risk_free_rate: float
     volatility: float
     time_to_maturity: float
     option_type: OptionType
-    dividend_yield: float = 0.0 
+    dividend_yield: float = 0.0
 
     def __post_init__(self):
         """Perform validation checks after initialization."""
@@ -41,7 +45,7 @@ class Option:
         if self.time_to_maturity <= 0:
             raise ValueError("Time to maturity must be positive.")
         if self.dividend_yield < 0:
-             raise ValueError("Dividend yield cannot be negative.")
+            raise ValueError("Dividend yield cannot be negative.")
 
     def is_call(self) -> bool:
         """Check if the option is a Call."""
