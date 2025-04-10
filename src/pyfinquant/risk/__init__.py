@@ -18,26 +18,25 @@ from .drawdown import (
 )
 
 from .risk_metrics import (
-    beta,
-    alpha,
-    tracking_error,
-    information_ratio,
-    treynor_ratio,
+    calculate_risk_metrics,
+    calculate_portfolio_risk
 )
 
 __all__ = [
-    'historical_var',
-    'parametric_var',
-    'monte_carlo_var',
-    'conditional_var',
-    'expected_shortfall',
-    'drawdown',
-    'max_drawdown',
-    'drawdown_duration',
-    'recovery_time',
-    'beta',
-    'alpha',
-    'tracking_error',
-    'information_ratio',
-    'treynor_ratio',
-] 
+    # Value at Risk
+    "historical_var",
+    "parametric_var",
+    "monte_carlo_var",
+    "conditional_var",
+    "expected_shortfall",
+    
+    # Drawdown
+    "drawdown",
+    "max_drawdown",
+    "drawdown_duration",
+    "recovery_time",
+    
+    # Risk Metrics
+    "calculate_risk_metrics",
+    "calculate_portfolio_risk"
+]

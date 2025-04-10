@@ -2,10 +2,12 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.stats import norm
+from ..utils.types import Numeric
 
 # Use TYPE_CHECKING to avoid circular imports for type hints
 if TYPE_CHECKING:
     from pyfinquant.instruments.option import Option
+
 
 class BlackScholes:
     """
@@ -13,89 +15,76 @@ class BlackScholes:
     Handles continuous dividend yields.
     """
 
-    @staticmethod
-    def _calculate_d1_d2(option: 'Option') -> tuple[float, float]:
+    def __init__(self, S: Numeric, K: Numeric, T: Numeric, r: Numeric, sigma: Numeric, option_type: str, q: Numeric = 0.0):
         """
-        Calculates the d1 and d2 parameters used in the Black-Scholes formula.
-
-        Args:
-            option: The Option object containing parameters S, K, r, q, sigma, T.
-
-        Returns:
-            A tuple containing (d1, d2).
+        Initialize the Black-Scholes model.
+        
+        Parameters
+        ----------
+        S : Numeric
+            Current price of the underlying asset
+        K : Numeric
+            Strike price of the option
+        T : Numeric
+            Time to maturity in years
+        r : Numeric
+            Risk-free interest rate
+        sigma : Numeric
+            Volatility of the underlying asset
+        option_type : str
+            Type of option, either 'call' or 'put'
+        q : Numeric, optional
+            Continuous dividend yield, by default 0.0
         """
-        S = option.underlying_price
-        K = option.strike_price
-        r = option.risk_free_rate
-        q = option.dividend_yield
-        sigma = option.volatility
-        T = option.time_to_maturity
-
-        # Handle potential division by zero or log of non-positive if T or sigma is zero,
-        # though Option validation should prevent T <= 0 and sigma <= 0.
-        # However, sigma * sqrt(T) could still be very small or zero.
-        sigma_sqrt_T = sigma * np.sqrt(T)
-        if sigma_sqrt_T == 0:
-             # If time or volatility is zero, the option price is its intrinsic value.
-             # We can return values for d1/d2 that lead to this, or handle it in the price func.
-             # For simplicity, let's return large values that push N(d) to 0 or 1.
-             # A more robust approach might handle T=0 or sigma=0 directly in price().
-             # If S > K for call, d1->inf, d2->inf. If S < K for put, d1->-inf, d2->-inf.
-             # Arbitrarily large/small number:
-             if S * np.exp(-q * T) >= K * np.exp(-r * T): # Equivalent to intrinsic value > 0
-                 return np.inf, np.inf
-             else:
-                 return -np.inf, -np.inf
-
-        d1 = (np.log(S / K) + (r - q + 0.5 * sigma**2) * T) / sigma_sqrt_T
-        d2 = d1 - sigma_sqrt_T
-        return d1, d2
-
-    @classmethod
-    def price(cls, option: 'Option') -> float:
-        """
-        Calculates the Black-Scholes-Merton price for a European option.
-
-        Args:
-            option: The Option object containing all necessary parameters.
-
-        Returns:
-            The calculated price of the option.
-        """
-        S = option.underlying_price
-        K = option.strike_price
-        r = option.risk_free_rate
-        q = option.dividend_yield
-        T = option.time_to_maturity
-
-        # Handle edge case T=0 or very small T: Option price is intrinsic value
-        if T < 1e-10:  # Use a small threshold instead of exact zero
-            if option.is_call():
-                return max(0.0, S - K)
-            else:  # Put
-                return max(0.0, K - S)
-
-        # Handle edge case sigma=0: Future price is deterministic
-        if option.volatility < 1e-10:  # Use a small threshold instead of exact zero
-            forward_price = S * np.exp((r - q) * T)
-            discount = np.exp(-r * T)
-            if option.is_call():
-                return max(0.0, forward_price - K) * discount
-            else:  # Put
-                return max(0.0, K - forward_price) * discount
-
-        d1, d2 = cls._calculate_d1_d2(option)
-
-        if option.is_call():
-            # Price = S * exp(-q*T) * N(d1) - K * exp(-r*T) * N(d2)
-            price = (S * np.exp(-q * T) * norm.cdf(d1)) - \
-                    (K * np.exp(-r * T) * norm.cdf(d2))
-        elif option.is_put():
-            # Price = K * exp(-r*T) * N(-d2) - S * exp(-q*T) * N(-d1)
-            price = (K * np.exp(-r * T) * norm.cdf(-d2)) - \
-                    (S * np.exp(-q * T) * norm.cdf(-d1))
+        self.S = float(S)
+        self.K = float(K)
+        self.T = float(T)
+        self.r = float(r)
+        self.sigma = float(sigma)
+        self.q = float(q)
+        self.option_type = option_type.lower()
+        
+        if self.option_type not in ['call', 'put']:
+            raise ValueError("option_type must be either 'call' or 'put'")
+        
+        if self.T < 0:
+            raise ValueError("Time to maturity must be positive.")
+        
+        # Calculate d1 and d2
+        self._calculate_d1_d2()
+    
+    def _calculate_d1_d2(self) -> None:
+        """Calculate d1 and d2 parameters."""
+        if self.T == 0 or self.sigma == 0:
+            self.d1 = np.inf if self.S > self.K else -np.inf
+            self.d2 = self.d1
         else:
-            raise ValueError("Invalid option type specified.")
-
-        # Price cannot be negative (arbitrage)
-        return max(0.0, price)
+            sigma_sqrt_T = self.sigma * np.sqrt(self.T)
+            self.d1 = (np.log(self.S / self.K) + (self.r - self.q + 0.5 * self.sigma**2) * self.T) / sigma_sqrt_T
+            self.d2 = self.d1 - sigma_sqrt_T
+    
+    def price(self) -> float:
+        """
+        Calculate the option price using the Black-Scholes formula.
+        
+        Returns
+        -------
+        float
+            Option price
+        """
+        if self.T == 0:
+            if self.option_type == 'call':
+                return max(0, self.S - self.K)
+            else:
+                return max(0, self.K - self.S)
+        
+        if self.sigma == 0:
+            if self.option_type == 'call':
+                return max(0, self.S * np.exp((self.r - self.q) * self.T) - self.K)
+            else:
+                return max(0, self.K - self.S * np.exp((self.r - self.q) * self.T))
+        
+        if self.option_type == 'call':
+            return self.S * np.exp(-self.q * self.T) * norm.cdf(self.d1) - self.K * np.exp(-self.r * self.T) * norm.cdf(self.d2)
+        else:
+            return self.K * np.exp(-self.r * self.T) * norm.cdf(-self.d2) - self.S * np.exp(-self.q * self.T) * norm.cdf(-self.d1)

@@ -1,42 +1,104 @@
 Metadata-Version: 2.4
 Name: pyfinquant
 Version: 0.1.0
-Summary: A Python library for financial quantitative analysis, focusing on options pricing and greeks.
-Author-email: Your Name <your.email@example.com>
-Project-URL: Homepage, https://github.com/your-username/PyFinQuant
-Project-URL: Repository, https://github.com/your-username/PyFinQuant
-Keywords: finance,quantitative,options,black-scholes,greeks,derivatives
+Summary: A Python library for financial quantitative analysis
+Home-page: 
+Author: PyFinQuant Team
+Author-email: Puneeth G B <puneethgb098@gmail.com>
+License: MIT
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Financial and Insurance Industry
-Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
-Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Office/Business :: Financial
 Classifier: Topic :: Office/Business :: Financial :: Investment
-Classifier: Topic :: Software Development :: Libraries :: Python Modules
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: numpy>=1.21
-Requires-Dist: scipy>=1.7
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: scipy>=1.7.0
+Requires-Dist: matplotlib>=3.4.0
 Provides-Extra: dev
-Requires-Dist: pytest>=7.0; extra == "dev"
-Requires-Dist: pytest-cov; extra == "dev"
-Requires-Dist: ruff; extra == "dev"
-Requires-Dist: mypy; extra == "dev"
-Requires-Dist: build; extra == "dev"
-Requires-Dist: twine; extra == "dev"
-Requires-Dist: Sphinx; extra == "dev"
-Requires-Dist: sphinx-rtd-theme; extra == "dev"
-Provides-Extra: test
-Requires-Dist: pytest>=7.0; extra == "test"
-Requires-Dist: pytest-cov; extra == "test"
-Provides-Extra: doc
-Requires-Dist: Sphinx; extra == "doc"
-Requires-Dist: sphinx-rtd-theme; extra == "doc"
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-cov>=2.0; extra == "dev"
+Requires-Dist: black>=21.0; extra == "dev"
+Requires-Dist: isort>=5.0; extra == "dev"
+Requires-Dist: flake8>=3.9; extra == "dev"
+Requires-Dist: mypy>=0.9; extra == "dev"
+Requires-Dist: sphinx>=4.0; extra == "dev"
+Requires-Dist: sphinx-rtd-theme>=0.5.0; extra == "dev"
+Requires-Dist: jupyter>=1.0.0; extra == "dev"
+Requires-Dist: ipykernel>=6.0.0; extra == "dev"
+Dynamic: author
 Dynamic: license-file
+Dynamic: requires-python
+
+# PyFinQuant
+
+A Python library for quantitative finance, providing tools for option pricing, risk analysis, and portfolio management.
+
+## Features
+
+- Option pricing using the Black-Scholes model
+- Greeks calculations (Delta, Gamma, Vega, Theta, Rho)
+- Risk metrics (VaR, Expected Shortfall, Maximum Drawdown)
+- Portfolio analysis tools
+- Support for dividend-paying assets
+
+## Installation
+
+```bash
+pip install pyfinquant
+```
+
+## Quick Start
+
+```python
+import pyfinquant as pfq
+import numpy as np
+
+# Generate sample price data
+prices = np.cumsum(np.random.normal(0, 1, 100)) + 100
+
+# Calculate returns and risk metrics
+simple_returns = pfq.returns(prices)
+var_95 = pfq.historical_var(prices, confidence_level=0.95)
+max_dd = pfq.max_drawdown(prices)
+
+# Price an option
+model = pfq.BlackScholes(
+    S=100,  # Current price
+    K=100,  # Strike price
+    T=1.0,  # Time to maturity in years
+    r=0.05,  # Risk-free rate
+    sigma=0.2,  # Volatility
+    option_type='call',
+    q=0.02  # Dividend yield
+)
+
+# Calculate option price and Greeks
+price = model.price()
+greeks = pfq.AnalyticalGreeks(model)
+delta = greeks.delta()
+gamma = greeks.gamma()
+vega = greeks.vega()
+theta = greeks.theta()
+rho = greeks.rho()
+```
+
+## Documentation
+
+For detailed documentation and examples, please visit our [documentation](docs/).
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
