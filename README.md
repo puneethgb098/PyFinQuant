@@ -1,61 +1,92 @@
 # PyFinQuant
 
-A Python library for financial quantitative analysis, focusing on options pricing and greeks.
+A Python library for financial quantitative analysis, focusing on options pricing, risk management, and portfolio optimization.
 
 ## Features
 
-- Options pricing using Black-Scholes model
-- Greeks calculations (Delta, Gamma, Vega, Theta, Rho)
-- Support for various option types (European, American)
-- Utility functions for financial calculations
-- Type hints and comprehensive documentation
+- Option pricing and Greeks calculation
+- Risk metrics (VaR, CVaR, drawdown analysis)
+- Portfolio optimization
+- Time series analysis
+- Statistical tools
 
 ## Installation
 
+1. Install Python 3.8 or higher from [python.org](https://www.python.org/downloads/)
+
+2. Clone the repository:
 ```bash
-pip install pyfinquant
+git clone https://github.com/yourusername/pyfinquant.git
+cd pyfinquant
 ```
 
-## Quick Start
+3. Create and activate a virtual environment:
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
+```
+
+4. Install dependencies:
+```bash
+pip install -r requirements-dev.txt
+```
+
+## Development Setup
+
+1. Install the package in development mode:
+```bash
+pip install -e .
+```
+
+2. Run tests:
+```bash
+pytest tests/ -v
+```
+
+3. Run linting:
+```bash
+flake8 src/
+black src/
+isort src/
+mypy src/
+```
+
+## Usage
 
 ```python
-from pyfinquant import Option, OptionType, BlackScholes
+import pyfinquant as pfq
 
-# Create an option
-option = Option(
-    strike_price=100,
-    time_to_expiry=1.0,
-    option_type=OptionType.CALL
+# Calculate returns
+returns = pfq.returns(prices)
+
+# Calculate risk metrics
+var = pfq.historical_var(returns)
+mdd = pfq.max_drawdown(prices)
+
+# Price an option
+option = pfq.Option(
+    S=100,  # Spot price
+    K=100,  # Strike price
+    T=1.0,  # Time to maturity
+    r=0.05,  # Risk-free rate
+    sigma=0.2,  # Volatility
+    option_type=pfq.OptionType.CALL
 )
-
-# Calculate price using Black-Scholes
-model = BlackScholes(spot_price=100, volatility=0.2, risk_free_rate=0.05)
-price = model.price(option)
-
-# Calculate Greeks
-greeks = model.greeks(option)
 ```
 
-## Development
+## Contributing
 
-To set up the development environment:
-
-```bash
-# Clone the repository
-git clone https://github.com/your-username/PyFinQuant.git
-cd PyFinQuant
-
-# Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install development dependencies
-pip install -e ".[dev]"
-
-# Run tests
-pytest
-```
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.

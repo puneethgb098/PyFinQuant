@@ -1,80 +1,57 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"] # Standard build backend requirements
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyfinquant"
-version = "0.1.0" # Initial version
-description = "A Python library for financial quantitative analysis, focusing on options pricing and greeks."
+version = "0.1.0"
+description = "A Python library for financial quantitative analysis"
 readme = "README.md"
 requires-python = ">=3.8"
-license = { file = "LICENSE" } # Or use text = "MIT", etc. if directly specifying
-keywords = ["finance", "quantitative", "options", "black-scholes", "greeks", "derivatives"]
+license = {text = "MIT"}
 authors = [
-  { name = "PyFinQuant Contributors", email = "contributors@pyfinquant.org" },
+    {name = "Your Name", email = "your.email@example.com"}
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha", # Start with Alpha
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Financial and Insurance Industry",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License", # Choose your license
-    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
     "Topic :: Office/Business :: Financial :: Investment",
-    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-# Core Dependencies
 dependencies = [
-    "numpy>=1.21",      # For numerical operations
-    "scipy>=1.7",       # For stats functions (like norm.cdf)
+    "numpy>=1.21.0",
+    "pandas>=1.3.0",
+    "scipy>=1.7.0",
+    "matplotlib>=3.4.0",
 ]
 
-[project.urls]
-Homepage = "https://github.com/pyfinquant/pyfinquant" # Updated
-Repository = "https://github.com/pyfinquant/pyfinquant" # Updated
-# Bug Tracker = "https://github.com/pyfinquant/pyfinquant/issues" # Optional
-
-# Optional Dependencies (for development, testing, docs)
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",      # Testing framework
-    "pytest-cov",     # Test coverage
-    "ruff",           # Linter and formatter
-    "mypy",           # Static type checker
-    "build",          # Package building tool
-    "twine",          # For uploading to PyPI (if needed later)
-    "Sphinx",         # Documentation generator
-    "sphinx-rtd-theme", # A popular Sphinx theme
+    "pytest>=6.0",
+    "pytest-cov>=2.0",
+    "black>=21.0",
+    "isort>=5.0",
+    "flake8>=3.9",
+    "mypy>=0.9",
 ]
-test = ["pytest>=7.0", "pytest-cov"]
-doc = ["Sphinx", "sphinx-rtd-theme"]
-
-# Configuration for tools like Ruff, MyPy, Pytest can also go here
-[tool.ruff]
-line-length = 88
-select = ["E", "W", "F", "I", "UP", "C4", "B", "A", "RUF"] # Select rule sets
-ignore = ["E501"] # Ignore line length errors if needed, handled by line-length
-
-[tool.ruff.format]
-quote-style = "double"
 
 [tool.pytest.ini_options]
-minversion = "7.0"
-addopts = "-ra -q --cov=src/pyfinquant --cov-report=term-missing" # Run verbosely, show failures, calculate coverage
-testpaths = [
-    "tests",
-]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=pyfinquant --cov-report=term-missing"
 
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true # Start with this, gradually reduce
-# Specify source code location for mypy
-files = ["src/pyfinquant"]
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
