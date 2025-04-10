@@ -11,7 +11,7 @@ requires-python = ">=3.8"
 license = { file = "LICENSE" } # Or use text = "MIT", etc. if directly specifying
 keywords = ["finance", "quantitative", "options", "black-scholes", "greeks", "derivatives"]
 authors = [
-  { name = "Your Name", email = "your.email@example.com" },
+  { name = "PyFinQuant Contributors", email = "contributors@pyfinquant.org" },
 ]
 classifiers = [
     "Development Status :: 3 - Alpha", # Start with Alpha
@@ -36,9 +36,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-username/PyFinQuant" # <<< Update this
-Repository = "https://github.com/your-username/PyFinQuant" # <<< Update this
-# Bug Tracker = "https://github.com/your-username/PyFinQuant/issues" # Optional
+Homepage = "https://github.com/pyfinquant/pyfinquant" # Updated
+Repository = "https://github.com/pyfinquant/pyfinquant" # Updated
+# Bug Tracker = "https://github.com/pyfinquant/pyfinquant/issues" # Optional
 
 # Optional Dependencies (for development, testing, docs)
 [project.optional-dependencies]

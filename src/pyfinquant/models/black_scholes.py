@@ -68,27 +68,23 @@ class BlackScholes:
         q = option.dividend_yield
         T = option.time_to_maturity
 
-        # Handle edge case T=0: Option price is intrinsic value
-        if T == 0:
+        # Handle edge case T=0 or very small T: Option price is intrinsic value
+        if T < 1e-10:  # Use a small threshold instead of exact zero
             if option.is_call():
                 return max(0.0, S - K)
-            else: # Put
+            else:  # Put
                 return max(0.0, K - S)
 
+        # Handle edge case sigma=0: Future price is deterministic
+        if option.volatility < 1e-10:  # Use a small threshold instead of exact zero
+            forward_price = S * np.exp((r - q) * T)
+            discount = np.exp(-r * T)
+            if option.is_call():
+                return max(0.0, forward_price - K) * discount
+            else:  # Put
+                return max(0.0, K - forward_price) * discount
+
         d1, d2 = cls._calculate_d1_d2(option)
-
-        # If d1 or d2 became inf due to sigma_sqrt_T = 0 (handled in _calculate_d1_d2)
-        # Check this case again, although T=0 is handled above. sigma=0 is trickier.
-        # If sigma=0, the future price is deterministic: S * exp((r-q)*T)
-        # if option.volatility == 0: # A more direct check
-        #     forward_price = S * np.exp((r-q)*T)
-        #     discount = np.exp(-r*T)
-        #     if option.is_call():
-        #         return discount * max(0.0, forward_price - K)
-        #     else: # Put
-        #         return discount * max(0.0, K - forward_price)
-        # The d1/d2 inf handling should approximate this.
-
 
         if option.is_call():
             # Price = S * exp(-q*T) * N(d1) - K * exp(-r*T) * N(d2)
@@ -99,7 +95,6 @@ class BlackScholes:
             price = (K * np.exp(-r * T) * norm.cdf(-d2)) - \
                     (S * np.exp(-q * T) * norm.cdf(-d1))
         else:
-            # Should be unreachable due to OptionType enum
             raise ValueError("Invalid option type specified.")
 
         # Price cannot be negative (arbitrage)

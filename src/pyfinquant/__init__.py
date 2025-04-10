@@ -1,7 +1,10 @@
+"""PyFinQuant - A Python library for financial quantitative analysis."""
+
 # Expose key classes and functions at the top level of the package
 from .greeks.analytical import AnalyticalGreeks
 from .instruments.option import Option, OptionType
 from .models.black_scholes import BlackScholes
+from .utils import Numeric
 
 # Define __all__ to specify the public API explicitly
 __all__ = [
@@ -9,6 +12,7 @@ __all__ = [
     "BlackScholes",
     "Option",
     "OptionType",
+    "Numeric",
 ]
 
 # Optionally set package version (can also be managed by build tools)
