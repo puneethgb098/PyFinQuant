@@ -10,6 +10,54 @@ A Python library for financial quantitative analysis, focusing on options pricin
 - Time series analysis
 - Statistical tools
 
+## Code Structure
+
+```
+PyFinQuant/
+├── src/
+│   └── pyfinquant/
+│       ├── __init__.py
+│       ├── option/
+│       │   ├── __init__.py
+│       │   ├── pricing.py
+│       │   └── types.py
+│       ├── greeks/
+│       │   ├── __init__.py
+│       │   ├── analytical.py
+│       │   └── numerical.py
+│       ├── risk/
+│       │   ├── __init__.py
+│       │   ├── var.py
+│       │   └── drawdown.py
+│       ├── portfolio/
+│       │   ├── __init__.py
+│       │   └── optimization.py
+│       ├── utils/
+│       │   ├── __init__.py
+│       │   ├── types.py
+│       │   ├── helpers.py
+│       │   └── validation.py
+│       └── returns.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_option.py
+│   ├── test_greeks.py
+│   ├── test_risk.py
+│   ├── test_portfolio.py
+│   └── test_utils.py
+├── examples/
+│   └── basic_usage.py
+├── docs/
+│   ├── Makefile
+│   ├── requirements.txt
+│   └── source/
+│       ├── conf.py
+│       └── index.rst
+├── requirements-dev.txt
+├── setup.py
+└── README.md
+```
+
 ## Installation
 
 1. Install Python 3.8 or higher from [python.org](https://www.python.org/downloads/)
