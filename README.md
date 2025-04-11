@@ -11,6 +11,30 @@ A Python library for quantitative finance, providing tools for option pricing, r
 - Portfolio analysis tools (Returns, Sharpe/Sortino Ratios, etc.)
 - Support for dividend-paying assets
 
+## Project Structure
+
+The project follows a standard Python package structure:
+
+```
+PyFinQuant/
+├── .github/         # GitHub Actions (CI)
+├── docs/            # Documentation
+├── examples/        # Usage examples
+├── src/pyfinquant/  # Main library code
+│   ├── core/
+│   ├── greeks/
+│   ├── instruments/
+│   ├── models/
+│   ├── risk/
+│   └── utils/
+├── tests/           # Unit tests
+├── pyproject.toml   # Packaging & config
+├── README.md        # This file
+└── LICENSE          # MIT License
+```
+
+The library code (`src/pyfinquant`) is organized into modules based on functionality (core math, instruments, models, greeks, risk, utils) for clarity and maintainability.
+
 ## Installation
 
 ```bash
