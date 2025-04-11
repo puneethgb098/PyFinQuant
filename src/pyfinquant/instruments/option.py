@@ -13,7 +13,7 @@ class OptionType(enum.Enum):
     PUT = "Put"
 
 
-@dataclass(frozen=True)  # Use frozen=True for immutability, good for financial objects
+@dataclass(frozen=True) 
 class Option:
     """
     Represents a European financial option contract.
@@ -176,14 +176,3 @@ class Option:
             option_type=self.option_type.value
         )
         return AnalyticalGreeks(model).theta(self)
-
-# Example of a helper function that could be in utils, but fits here too:
-# This requires date calculations, which might add dependencies or complexity.
-# For simplicity now, we assume time_to_maturity is directly provided in years.
-# def calculate_time_to_maturity(evaluation_date: date, expiration_date: date) -> float:
-#     """Calculates time to maturity in years between two dates."""
-#     if evaluation_date >= expiration_date:
-#         return 0.0 # Or raise error
-#     delta = expiration_date - evaluation_date
-#     # Approximate using average days in year
-#     return delta.days / 365.25
