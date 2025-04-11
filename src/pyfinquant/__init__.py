@@ -1,6 +1,5 @@
 """PyFinQuant - A Python library for financial quantitative analysis."""
 
-# Core functionality
 from .core import (
     correlation,
     covariance,
