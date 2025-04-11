@@ -52,27 +52,28 @@ def test_B_calculation(hw_model_flat):
 
 def test_A_calculation_flat_curve(hw_model_flat):
     """Test the A(t, T) calculation specifically for a flat initial curve.
-       In this case, the formula simplifies, and log(A) should involve the integral of theta(u).
-       For a flat curve and constant parameters, A simplifies further.
+       Verify the consistency relationship P(0,T) = A(0,T) * exp(-B(0,T) * r(0)).
     """
-    t, T = 0.5, 1.0
-    # For a flat curve f(0,t)=r, P(0,t)=exp(-rt), the A(t,T) formula holds.
-    # Let's verify A(0, T) consistency
-    # A(0, T) should relate to P(0, T) = A(0, T) * exp(-B(0, T) * r(0))
-    # If we assume r(0) = f(0,0) = FLAT_RATE
+    t, T = 0.0, 1.0 # Test at t=0
     a = hw_model_flat.a
     sigma = hw_model_flat.sigma
+    FLAT_RATE = hw_model_flat.f0(0) # Get r(0)
     
-    # Recalculate P(0,T) using A(0,T) and B(0,T)
-    B_0_T = hw_model_flat.B(0, T)
-    log_A_0_T = -(sigma**2 / (4*a)) * (B_0_T**2) * (1 - np.exp(-2*a*0)) # Term 3 simplifies to 0 at t=0
-    log_A_0_T += np.log(hw_model_flat.P0(T) / hw_model_flat.P0(0)) # Term 1 at t=0, P0(0)=1
-    log_A_0_T -= B_0_T * hw_model_flat.f0(0) # Term 2 at t=0
+    # Calculate A(0, T) and B(0, T) using the model functions
+    A_0_T_model = hw_model_flat.A(t, T)
+    B_0_T_model = hw_model_flat.B(t, T)
     
-    A_0_T = np.exp(log_A_0_T)
-    price_recalc = A_0_T * np.exp(-B_0_T * FLAT_RATE)
+    # Verify the fundamental relationship: P(0, T) = A(0, T) * exp(-B(0, T) * r(0))
+    price_recalc = A_0_T_model * np.exp(-B_0_T_model * FLAT_RATE)
+    expected_price = hw_model_flat.P0(T)
     
-    assert abs(price_recalc - hw_model_flat.P0(T)) < TOL
+    # Use original tight tolerance
+    assert abs(price_recalc - expected_price) < TOL
+    
+    # Optional: Also test A(t,T) for t > 0 against the calculated P(t,T) if needed
+    # This requires knowing r(t) which is stochastic, so maybe less direct.
+    # A direct check of the A(t,T) formula against a known result might be better
+    # if testing for t>0.
 
 def test_zero_coupon_bond_price(hw_model_flat):
     """Test the zero-coupon bond price calculation P(t, T)."""

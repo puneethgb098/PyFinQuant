@@ -46,7 +46,6 @@ class Option:
             raise ValueError("Volatility must be positive.")
         if self.time_to_maturity <= 0:
             raise ValueError("Time to maturity must be positive.")
-        # risk_free_rate can theoretically be negative, so no strict check > 0
         if self.dividend_yield < 0:
             raise ValueError("Dividend yield cannot be negative.")
 

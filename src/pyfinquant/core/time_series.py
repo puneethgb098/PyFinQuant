@@ -22,7 +22,7 @@ def log_returns(x: Union[np.ndarray, pd.Series]) -> Union[np.ndarray, pd.Series]
 
 def cumulative_returns(x: Union[np.ndarray, pd.Series]) -> Union[np.ndarray, pd.Series]:
     """Calculate the cumulative returns of a series."""
-    simple_returns = returns(x).fillna(0)  # Calculate simple returns and fill NaN with 0
+    simple_returns = returns(x).fillna(0)
     return (1 + simple_returns).cumprod() - 1
 
 
@@ -42,7 +42,6 @@ def sharpe_ratio(
     Returns:
         The annualized Sharpe ratio
     """
-    # Convert input to pandas Series if it's a numpy array
     if isinstance(x, np.ndarray):
         x = pd.Series(x)
         
@@ -66,13 +65,11 @@ def sortino_ratio(
     Returns:
         The annualized Sortino ratio
     """
-    # Convert input to pandas Series if it's a numpy array
     if isinstance(x, np.ndarray):
         x = pd.Series(x)
         
     excess_returns = x - risk_free_rate / periods_per_year
     downside_std = excess_returns[excess_returns < 0].std()
-    # Handle case where downside deviation is zero
     if downside_std == 0:
         return np.inf if excess_returns.mean() > 0 else 0.0
     return np.sqrt(periods_per_year) * excess_returns.mean() / downside_std
@@ -94,7 +91,6 @@ def information_ratio(
     Returns:
         The annualized information ratio
     """
-    # Convert inputs to pandas Series if they are numpy arrays
     if isinstance(x, np.ndarray):
         x = pd.Series(x)
     if isinstance(benchmark, np.ndarray):
@@ -102,7 +98,6 @@ def information_ratio(
         
     excess_returns = x - benchmark
     tracking_error = excess_returns.std()
-    # Handle case where tracking error is zero
     if tracking_error == 0:
         return np.inf if excess_returns.mean() > 0 else 0.0
     return np.sqrt(periods_per_year) * excess_returns.mean() / tracking_error

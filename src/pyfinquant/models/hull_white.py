@@ -41,21 +41,30 @@ class HullWhite:
         return (1.0 / self.a) * (1.0 - np.exp(-self.a * (T - t)))
 
     def A(self, t: float, T: float) -> float:
-        """Calculates the A(t, T) term for bond pricing."""
+        """Calculate A(t,T) for the Hull-White model using the formula
+           from Hull, "Options, Futures, and Other Derivatives" (Eq. 32.16).
+        
+        Args:
+            t: Current time
+            T: Maturity time
+            
+        Returns:
+            A(t,T) value
+        """
         if t > T:
-            raise ValueError("Evaluation time t cannot be greater than maturity T.")
+            raise ValueError("t must be less than or equal to T")
+            
+        if t == T:
+            return 1.0
+            
+        B_t_T = self.B(t, T)
         
-        # P(0, T) / P(0, t)
-        term1 = np.log(self.P0(T) / self.P0(t))
+        # ln A(t, T) = ln(P0(T)/P0(t)) + B(t, T)f0(t) - (sigma^2 / (4*a)) * (1 - exp(-2*a*t)) * B(t, T)^2
+        term1 = np.log(self.P0(T) / (1.0 if t == 0 else self.P0(t)))  # P0(0) = 1
+        term2 = B_t_T * self.f0(t)  # Positive sign based on Hull's text
+        term3 = -(self.sigma**2 / (4 * self.a)) * (1 - np.exp(-2 * self.a * t)) * (B_t_T**2) # Negative sign based on Hull's text
         
-        # B(t, T) * f(0, t)
-        term2 = self.B(t, T) * self.f0(t)
-        
-        # (sigma^2 / (4 * a)) * (1 - exp(-2 * a * t)) * B(t, T)^2
-        b_t_T = self.B(t, T)
-        term3 = (self._sigma2 / (4.0 * self.a)) * (1.0 - np.exp(-2.0 * self.a * t)) * (b_t_T ** 2)
-        
-        log_A = term1 - term2 - term3
+        log_A = term1 + term2 + term3 
         return np.exp(log_A)
 
     def zero_coupon_bond_price(self, t: float, T: float, r_t: float) -> float:

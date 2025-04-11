@@ -18,6 +18,7 @@ src/pyfinquant/instruments/__init__.py
 src/pyfinquant/instruments/option.py
 src/pyfinquant/models/__init__.py
 src/pyfinquant/models/black_scholes.py
+src/pyfinquant/models/hull_white.py
 src/pyfinquant/risk/__init__.py
 src/pyfinquant/risk/drawdown.py
 src/pyfinquant/risk/risk_metrics.py
@@ -25,7 +26,5 @@ src/pyfinquant/risk/value_at_risk.py
 src/pyfinquant/utils/__init__.py
 src/pyfinquant/utils/helpers.py
 src/pyfinquant/utils/types.py
-tests/test_black_scholes.py
 tests/test_core.py
-tests/test_options.py
 tests/test_risk.py

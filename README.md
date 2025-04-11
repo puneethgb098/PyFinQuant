@@ -107,6 +107,10 @@ Contributions are welcome! Please review the contribution guidelines [CONTRIBUTI
     mypy src/
     ```
 
+## Author
+
+*   **Puneeth G B** - [puneethgb098](https://github.com/puneethgb098)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
