@@ -4,7 +4,6 @@ import numpy as np
 from scipy.stats import norm
 from ..utils.types import Numeric
 
-# Use TYPE_CHECKING to avoid circular imports for type hints
 if TYPE_CHECKING:
     from pyfinquant.instruments.option import Option
 
