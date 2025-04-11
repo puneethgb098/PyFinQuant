@@ -16,160 +16,210 @@ class AnalyticalGreeks:
     This class provides methods to calculate the following Greeks:
     - Delta: First derivative of option price with respect to underlying price
     - Gamma: Second derivative of option price with respect to underlying price
-    - Vega: First derivative of option price with respect to volatility
-    - Theta: First derivative of option price with respect to time
-    - Rho: First derivative of option price with respect to risk-free rate
-    - Rho_dividend: First derivative of option price with respect to dividend yield
+    - Vega: First derivative of option price with respect to volatility (per 1% change)
+    - Theta: First derivative of option price with respect to time (per calendar day)
+    - Rho: First derivative of option price with respect to risk-free rate (per 1% change)
+    - Psi (Rho_dividend): First derivative of option price with respect to dividend yield
     """
 
     def __init__(self, model: BlackScholes):
         """
         Initialize the AnalyticalGreeks calculator.
-        
+
         Parameters
         ----------
         model : BlackScholes
-            Black-Scholes model instance
+            An initialized Black-Scholes model instance containing all necessary
+            parameters (S, K, r, q, sigma, T, option_type) and calculated
+            d1 and d2 values.
         """
+        if not isinstance(model, BlackScholes):
+            raise TypeError("model must be an instance of BlackScholes")
         self.model = model
 
     def delta(self) -> float:
         """
         Calculate the option's delta.
-        
+
+        Delta measures the rate of change of the option price with respect
+        to a $1 change in the underlying asset's price.
+
         Returns
         -------
         float
             Option delta
         """
+        if self.model.T <= 0:
+            if self.model.option_type == 'call':
+                return 1.0 if self.model.S > self.model.K else 0.0
+            else:
+                return -1.0 if self.model.S < self.model.K else 0.0
+
+        exp_neg_qt = np.exp(-self.model.q * self.model.T)
+        d1 = self.model.d1
+
         if self.model.option_type == 'call':
-            return np.exp(-self.model.q * self.model.T) * norm.cdf(self.model.d1)
+            return exp_neg_qt * norm.cdf(d1)
+        elif self.model.option_type == 'put':
+            return -exp_neg_qt * norm.cdf(-d1)
         else:
-            return np.exp(-self.model.q * self.model.T) * (norm.cdf(self.model.d1) - 1)
+            raise ValueError("Invalid option type in model.")
 
     def gamma(self) -> float:
         """
         Calculate the option's gamma.
-        
+
+        Gamma measures the rate of change in the delta with respect to a $1
+        change in the underlying asset's price.
+
         Returns
         -------
         float
             Option gamma
         """
-        if self.model.T == 0 or self.model.sigma == 0:
+        if self.model.T <= 0 or self.model.sigma <= 0:
             return 0.0
-        return np.exp(-self.model.q * self.model.T) * norm.pdf(self.model.d1) / (self.model.S * self.model.sigma * np.sqrt(self.model.T))
+
+        S = self.model.S
+        T = self.model.T
+        sigma = self.model.sigma
+        d1 = self.model.d1
+        q = self.model.q
+
+        exp_neg_qt = np.exp(-q * T)
+        pdf_d1 = norm.pdf(d1)
+        denominator = S * sigma * np.sqrt(T)
+
+        return exp_neg_qt * pdf_d1 / denominator
 
     def vega(self) -> float:
         """
         Calculate the option's vega.
-        
-        Returns
-        -------
-        float
-            Option vega
-        """
-        if self.model.T == 0:
-            return 0.0
-        return self.model.S * np.exp(-self.model.q * self.model.T) * np.sqrt(self.model.T) * norm.pdf(self.model.d1) / 100
 
-    def rho(self) -> float:
-        """
-        Calculate the option's rho.
-        
+        Vega measures sensitivity to volatility. It is the change in the
+        option price per 1% change in implied volatility.
+
         Returns
         -------
         float
-            Option rho
+            Option vega (scaled by 1/100)
         """
-        if self.model.T == 0:
+        if self.model.T <= 0:
             return 0.0
-        if self.model.option_type == 'call':
-            return self.model.K * self.model.T * np.exp(-self.model.r * self.model.T) * norm.cdf(self.model.d2) / 100
-        else:
-            return -self.model.K * self.model.T * np.exp(-self.model.r * self.model.T) * norm.cdf(-self.model.d2) / 100
+
+        S = self.model.S
+        T = self.model.T
+        d1 = self.model.d1
+        q = self.model.q
+
+        exp_neg_qt = np.exp(-q * T)
+        pdf_d1 = norm.pdf(d1)
+
+        return S * exp_neg_qt * np.sqrt(T) * pdf_d1 / 100.0
 
     def theta(self) -> float:
         """
         Calculate the option's theta.
-        
+
+        Theta measures sensitivity to the passage of time (time decay).
+        It represents the change in option price per calendar day decrease
+        in time to expiration. Theta is typically negative for long options.
+
         Returns
         -------
         float
-            Option theta (daily theta)
+            Option theta (per calendar day)
         """
-        if self.model.T == 0:
+        if self.model.T <= 0:
             return 0.0
-        
+
         S = self.model.S
         K = self.model.K
         r = self.model.r
         q = self.model.q
         sigma = self.model.sigma
         T = self.model.T
-        
         d1 = self.model.d1
         d2 = self.model.d2
-        
+
+        exp_neg_qt = np.exp(-q * T)
+        exp_neg_rt = np.exp(-r * T)
+        pdf_d1 = norm.pdf(d1)
+
+        common_term = -(S * sigma * exp_neg_qt * pdf_d1) / (2 * np.sqrt(T))
+
         if self.model.option_type == 'call':
-            theta = (-S * sigma * np.exp(-q * T) * norm.pdf(d1) / (2 * np.sqrt(T))) - \
-                   (r * K * np.exp(-r * T) * norm.cdf(d2)) + \
-                   (q * S * np.exp(-q * T) * norm.cdf(d1))
+            theta = (common_term 
+                    - r * K * exp_neg_rt * norm.cdf(d2) 
+                    + q * S * exp_neg_qt * norm.cdf(d1))
+        elif self.model.option_type == 'put':
+            theta = (common_term 
+                    + r * K * exp_neg_rt * norm.cdf(-d2) 
+                    - q * S * exp_neg_qt * norm.cdf(-d1))
         else:
-            theta = (-S * sigma * np.exp(-q * T) * norm.pdf(d1) / (2 * np.sqrt(T))) + \
-                   (r * K * np.exp(-r * T) * norm.cdf(-d2)) - \
-                   (q * S * np.exp(-q * T) * norm.cdf(-d1))
-        
-        return theta / 365.0  # Convert to daily theta
+            raise ValueError("Invalid option type in model.")
 
-    @staticmethod
-    def rho_dividend(option: "Option") -> float:
+        return theta / 365.0
+
+    def rho(self) -> float:
         """
-        Calculates the sensitivity to dividend yield (Psi).
+        Calculate the option's rho.
 
-        Psi measures the rate of change in the option price with respect to changes in the dividend yield.
-        Psi is negative for call options and positive for put options.
+        Rho measures sensitivity to the risk-free interest rate. It is the
+        change in the option price per 1% change in the risk-free rate.
 
-        Args:
-            option: The Option object containing all necessary parameters.
-
-        Returns:
-            The calculated psi (dividend sensitivity) of the option.
+        Returns
+        -------
+        float
+            Option rho (scaled by 1/100)
         """
-        try:
-            from pyfinquant.models.black_scholes import BlackScholes
-
-            d1, d2 = BlackScholes._calculate_d1_d2(option)
-        except ImportError:
-            S = option.underlying_price
-            K = option.strike_price
-            r = option.risk_free_rate
-            q = option.dividend_yield
-            sigma = option.volatility
-            T = option.time_to_maturity
-            sigma_sqrt_T = sigma * np.sqrt(T)
-            if sigma_sqrt_T == 0:
-                d1 = np.inf if S > K else -np.inf
-                d2 = d1
-            else:
-                d1 = (np.log(S / K) + (r - q + 0.5 * sigma**2) * T) / sigma_sqrt_T
-                d2 = d1 - sigma_sqrt_T
-
-        S = option.underlying_price
-        q = option.dividend_yield
-        T = option.time_to_maturity
-
-        if T == 0:
+        if self.model.T <= 0:
             return 0.0
 
-        cdf_d1 = norm.cdf(d1)
-        cdf_neg_d1 = norm.cdf(-d1)
+        K = self.model.K
+        T = self.model.T
+        r = self.model.r
+        d2 = self.model.d2
 
-        if option.is_call():
-            psi = -S * T * np.exp(-q * T) * cdf_d1
-        elif option.is_put():
-            psi = S * T * np.exp(-q * T) * cdf_neg_d1
+        exp_neg_rt = np.exp(-r * T)
+
+        if self.model.option_type == 'call':
+            return K * T * exp_neg_rt * norm.cdf(d2) / 100.0
+        elif self.model.option_type == 'put':
+            return -K * T * exp_neg_rt * norm.cdf(-d2) / 100.0
         else:
-            raise ValueError("Invalid option type.")
+            raise ValueError("Invalid option type in model.")
 
-        return psi
+    def psi(self) -> float:
+        """
+        Calculate the option's sensitivity to dividend yield (Psi).
+
+        Psi measures the rate of change in the option price with respect
+        to changes in the continuous dividend yield.
+        Psi is typically negative for call options and positive for put options.
+
+        Returns
+        -------
+        float
+            The calculated psi (dividend sensitivity) of the option.
+        """
+        if self.model.T <= 0:
+            return 0.0
+
+        S = self.model.S
+        T = self.model.T
+        q = self.model.q
+        d1 = self.model.d1
+
+        exp_neg_qt = np.exp(-q * T)
+
+        if self.model.option_type == 'call':
+            return -S * T * exp_neg_qt * norm.cdf(d1) / 100.0
+        elif self.model.option_type == 'put':
+            return S * T * exp_neg_qt * norm.cdf(-d1) / 100.0
+        else:
+            raise ValueError("Invalid option type in model.")
+
+    def rho_dividend(self) -> float:
+        """Alias for psi()."""
+        return self.psi()
