@@ -24,13 +24,10 @@ from .core import (
     std,
 )
 
-# Option pricing and interest rate models
 from .greeks.analytical import AnalyticalGreeks
-# from .instruments.option import Option, OptionType # Removed as Option class is deprecated
 from .models.black_scholes import BlackScholes
 from .models.hull_white import HullWhite
 
-# Risk management
 from .risk import (
     conditional_var,
     drawdown,
@@ -43,12 +40,9 @@ from .risk import (
     recovery_time,
 )
 
-# Utilities
 from .utils import Numeric
 
-# Define __all__ to specify the public API explicitly
 __all__ = [
-    # Core functions
     "mean",
     "std",
     "skew",
@@ -69,7 +63,6 @@ __all__ = [
     "maximize_sharpe",
     "maximize_sortino",
     "minimize_tracking_error",
-    # Risk management
     "historical_var",
     "parametric_var",
     "monte_carlo_var",
@@ -79,15 +72,10 @@ __all__ = [
     "max_drawdown",
     "drawdown_duration",
     "recovery_time",
-    # Models
-    "AnalyticalGreeks", # Technically Greeks, but closely tied to models
+    "AnalyticalGreeks", 
     "BlackScholes",
     "HullWhite",
-    # "Option", # Removed
-    # "OptionType", # Removed
-    # Utilities
     "Numeric",
 ]
 
-# Package version
 __version__ = "0.1.0"
