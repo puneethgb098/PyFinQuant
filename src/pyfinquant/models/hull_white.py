@@ -59,10 +59,9 @@ class HullWhite:
             
         B_t_T = self.B(t, T)
         
-        # ln A(t, T) = ln(P0(T)/P0(t)) + B(t, T)f0(t) - (sigma^2 / (4*a)) * (1 - exp(-2*a*t)) * B(t, T)^2
-        term1 = np.log(self.P0(T) / (1.0 if t == 0 else self.P0(t)))  # P0(0) = 1
-        term2 = B_t_T * self.f0(t)  # Positive sign based on Hull's text
-        term3 = -(self.sigma**2 / (4 * self.a)) * (1 - np.exp(-2 * self.a * t)) * (B_t_T**2) # Negative sign based on Hull's text
+        term1 = np.log(self.P0(T) / (1.0 if t == 0 else self.P0(t)))  
+        term2 = B_t_T * self.f0(t)  
+        term3 = -(self.sigma**2 / (4 * self.a)) * (1 - np.exp(-2 * self.a * t)) * (B_t_T**2) 
         
         log_A = term1 + term2 + term3 
         return np.exp(log_A)
@@ -91,11 +90,6 @@ class HullWhite:
         price = a_t_T * np.exp(-b_t_T * r_t)
         return price
 
-    # Potential future additions:
-    # - Method to derive theta(t) if not provided implicitly via P0/f0
-    # - Method to simulate short rate paths using discretization (Euler, Milstein)
-    # - Methods for pricing European bond options (using Jamshidian's trick or integration)
-    # - Methods for pricing caps/floors/swaptions
 
     def __repr__(self):
         return f"HullWhite(a={self.a}, sigma={self.sigma}, initial_fwd_rate_func={self.f0}, initial_bond_price_func={self.P0})" 
