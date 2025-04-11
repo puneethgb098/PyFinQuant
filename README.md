@@ -14,7 +14,11 @@ A Python library for quantitative finance, providing tools for option pricing, r
 ## Installation
 
 ```bash
+# For users
 pip install pyfinquant
+
+# For developers (editable install with dev tools)
+pip install -e ".[dev]"
 ```
 
 ## Quick Start
@@ -69,7 +73,39 @@ For detailed documentation and examples, please visit our [documentation](docs/)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please review the contribution guidelines [CONTRIBUTING.md](CONTRIBUTING.md) and feel free to submit a Pull Request.
+
+## Development Setup
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/puneethgb098/PyFinQuant.git # Replace with your repo URL if different
+    cd PyFinQuant
+    ```
+2.  Create and activate a virtual environment (recommended):
+    ```bash
+    # Example using venv
+    python -m venv .venv
+    source .venv/bin/activate  # Linux/macOS
+    # .venv\Scripts\activate  # Windows
+    ```
+3.  Install the package in editable mode with development dependencies:
+    ```bash
+    pip install -e ".[dev]"
+    ```
+4.  Run tests:
+    ```bash
+    pytest tests/
+    # Or using the python launcher:
+    # py -m pytest tests/
+    ```
+5.  Check code style and formatting:
+    ```bash
+    black src/ tests/
+    isort src/ tests/
+    flake8 src/
+    mypy src/
+    ```
 
 ## License
 
