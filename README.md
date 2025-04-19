@@ -1,4 +1,4 @@
-# PyFinQuant
+# PyFinQuant (In Progress)
 
 A comprehensive Python library for quantitative finance, providing tools for financial analysis, backtesting, and portfolio optimization.
 
