@@ -1,0 +1,43 @@
+name: "Python CodeQL Configuration"
+
+disable-default-queries: false
+
+packs:
+  python:
+    version: latest
+
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
+
+query-filters:
+  - exclude:
+      problem.severity:
+        - warning
+        - recommendation
+
+paths-ignore:
+  - "**/tests/**"
+  - "**/test/**"
+  - "**/docs/**"
+  - "**/.github/**"
+  - "**/examples/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/venv/**"
+  - "**/.venv/**"
+  - "**/__pycache__/**"
+  - "**/*.pyc"
+
+paths:
+  - "src"
+  - "pyfinquant"
+
+languages:
+  python:
+    setup:
+      - curl -LsSf https://astral.sh/uv/install.sh | sh
+      - uv venv .venv
+      - source .venv/bin/activate
+      - uv pip install -e .
+      - uv pip install -e ".[dev]" 
