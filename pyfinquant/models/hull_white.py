@@ -74,10 +74,6 @@ class HullWhite2F:
         P_T = self.initial_bond_price_func(T)
         f_t = self.initial_fwd_rate_func(t)
         
-<<<<<<< HEAD
-=======
-        # Calculate variance terms
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
         V1 = (self.sigma1**2 / (2 * self.a1**2)) * (
             (T - t) + (2 / self.a1) * np.exp(-self.a1 * (T - t)) -
             (1 / (2 * self.a1)) * np.exp(-2 * self.a1 * (T - t)) - 3 / (2 * self.a1)
