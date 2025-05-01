@@ -19,11 +19,7 @@ from pyfinquant.instruments.option import Option
 def sample_call_option() -> Option:
     """Create a sample call option for testing."""
     return Option(
-<<<<<<< HEAD
         underlying_price=100.0,
-=======
-        spot_price=100.0,
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
         strike_price=100.0,
         time_to_maturity=1.0,
         risk_free_rate=0.05,
@@ -37,11 +33,7 @@ def sample_call_option() -> Option:
 def sample_put_option() -> Option:
     """Create a sample put option for testing."""
     return Option(
-<<<<<<< HEAD
         underlying_price=100.0,
-=======
-        spot_price=100.0,
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
         strike_price=100.0,
         time_to_maturity=1.0,
         risk_free_rate=0.05,
@@ -56,17 +48,9 @@ def test_delta(sample_call_option, sample_put_option):
     call_delta = delta(sample_call_option)
     put_delta = delta(sample_put_option)
     
-<<<<<<< HEAD
     assert -1 <= call_delta <= 1
     assert -1 <= put_delta <= 1
     
-=======
-    # Delta should be between -1 and 1
-    assert -1 <= call_delta <= 1
-    assert -1 <= put_delta <= 1
-    
-    # Call delta should be positive, put delta should be negative
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
     assert call_delta > 0
     assert put_delta < 0
 

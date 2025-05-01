@@ -44,7 +44,6 @@ def check_non_negative(value: Numeric, name: str = "Value") -> None:
 
 
 def calculate_returns(
-<<<<<<< HEAD
     prices: Union[pd.Series, pd.DataFrame, np.ndarray], 
     method: str = 'arithmetic') -> Union[pd.Series, pd.DataFrame, np.ndarray]: 
     """
@@ -88,34 +87,6 @@ def calculate_returns(
                 ratio = prices[1:] / prices[:-1]
                 returns[1:][valid_mask] = np.log(ratio[valid_mask])
             return returns
-=======
-    prices: Union[pd.Series, np.ndarray],
-    method: str = 'arithmetic'
-) -> Union[pd.Series, np.ndarray]:
-    """
-    Calculate returns from a series of prices.
-
-    Args:
-        prices: Series of prices.
-        method: Method to calculate returns ('arithmetic' or 'log').
-
-    Returns:
-        Series of returns.
-    """
-    if method not in ['arithmetic', 'log']:
-        raise ValueError("method must be either 'arithmetic' or 'log'")
-
-    if isinstance(prices, pd.Series):
-        if method == 'arithmetic':
-            return prices.pct_change()
-        else:
-            return np.log(prices / prices.shift(1))
-    else:
-        if method == 'arithmetic':
-            return np.diff(prices) / prices[:-1]
-        else:
-            return np.log(prices[1:] / prices[:-1])
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
 
 
 def annualize_returns(

@@ -14,18 +14,10 @@ from pyfinquant.utils.helpers import (
 
 def test_check_positive():
     """Test check_positive function."""
-<<<<<<< HEAD
-=======
-    # Test valid positive values
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
     check_positive(1.0)
     check_positive(0.1)
     check_positive(100.0)
     
-<<<<<<< HEAD
-=======
-    # Test invalid values
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
     with pytest.raises(ValueError):
         check_positive(0.0)
     
@@ -38,19 +30,11 @@ def test_check_positive():
 
 def test_check_non_negative():
     """Test check_non_negative function."""
-<<<<<<< HEAD
-=======
-    # Test valid non-negative values
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
     check_non_negative(0.0)
     check_non_negative(1.0)
     check_non_negative(0.1)
     check_non_negative(100.0)
     
-<<<<<<< HEAD
-=======
-    # Test invalid values
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
     with pytest.raises(ValueError):
         check_non_negative(-1.0)
     

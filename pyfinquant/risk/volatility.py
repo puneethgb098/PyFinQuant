@@ -74,11 +74,7 @@ class ImpliedVolatility:
     def calculate(self, 
                  option_price: float,
                  strike_price: float,
-<<<<<<< HEAD
                  underlying_price: float,
-=======
-                 spot_price: float,
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
                  time_to_expiry: float,
                  risk_free_rate: float,
                  option_type: str = 'call',
@@ -89,11 +85,7 @@ class ImpliedVolatility:
         Args:
             option_price: Market price of the option
             strike_price: Strike price of the option
-<<<<<<< HEAD
             underlying_price: Current price of the underlying asset
-=======
-            spot_price: Current price of the underlying asset
->>>>>>> 77d228180a2f5aa0c116c49388d15823995d88c1
             time_to_expiry: Time to expiration in years
             risk_free_rate: Risk-free interest rate
             option_type: Type of option ('call' or 'put', default: 'call')
